@@ -76,7 +76,8 @@ $(function(){
                 }
                 var tname;
                 tname = targ.tagName;
-                alert("this target tagName :" + tname + ",Id is" + targ.getAttribute("id"));
+                // copyToClipboard(targ.getAttribute("id"));
+                alert("this target tagName :" + tname + "\nId is " + targ.getAttribute("id"));
                 });
                 //** Add attrubute **/
                 var conbineAtt = "";
