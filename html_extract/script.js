@@ -76,9 +76,15 @@ $(function(){
                 }
                 var tname;
                 tname = targ.tagName;
-                // copyToClipboard(targ.getAttribute("id"));
+                var t = document.createElement("textarea");
+                document.body.appendChild(t);
+                t.value = targ.getAttribute("id");
+                t.select();
+                document.execCommand('copy');
+                document.body.removeChild(t);
                 alert("this target tagName :" + tname + "\nId is " + targ.getAttribute("id"));
                 });
+                
                 //** Add attrubute **/
                 var conbineAtt = "";
                 var colorOfAtt ="";
