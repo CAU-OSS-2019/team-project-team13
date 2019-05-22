@@ -49,6 +49,10 @@ $(function(){
             }
         }
       }
+
+    function replaceAll(str, searchStr, replaceStr) {
+      return str.split(searchStr).join(replaceStr);
+    }  
       //button을 클릭하면, content page의 html을 글거온다.
     $('#test').click(function(){
         chrome.tabs.executeScript({
@@ -76,9 +80,13 @@ $(function(){
                 }
                 var tname;
                 tname = targ.tagName;
+
                 var t = document.createElement("textarea");
                 document.body.appendChild(t);
                 t.value = targ.getAttribute("id");
+                t.value = replaceAll(t.value, "__", ".");
+                t.value = replaceAll(t.value, "_*_", "#");
+                t.value = replaceAll(t.value, "**", " ");
                 t.select();
                 document.execCommand('copy');
                 document.body.removeChild(t);
