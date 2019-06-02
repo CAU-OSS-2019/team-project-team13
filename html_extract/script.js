@@ -52,123 +52,137 @@ $(function(){
 
     function replaceAll(str, searchStr, replaceStr) {
       return str.split(searchStr).join(replaceStr);
-    }  
+    }
       //button을 클릭하면, content page의 html을 글거온다.
     $('#test').click(function(){
+        if (!window.originPopup) {
+            window.originPopup = document.body.innerHTML;
+        }
+        else {
+            document.body.innerHTML = window.originPopup;
+        }
+
         chrome.tabs.executeScript({
             //body의 html가 callback 함수의 result 파라미터로 들어간다.
             code:' document.body.innerHTML;'
           },function(result){
-            //해당 html String을 jquery로 hmtl object형식으로 바꿔준다.  
+            //해당 html String을 jquery로 hmtl object형식으로 바꿔준다.
             var domString = result[0];
             var html = $.parseHTML(domString);
             //각 html 태그의 하위노드에 뭐가 있는지 확인하고, 해당 tree구조를 보여준다.
             for(var i = 0;i<html.length;i++){
                 if(html[i].children){
-                    childrenSearch(html[i],"ol__contentBody");   
+                    childrenSearch(html[i],"ol__contentBody");
                 }
             }
-            $(document).ready(function(){   
-                /*** Add attribute ***/
-                $("body").click(function(){
-                    var e = window.event;
-                    console.log(e);
-                    if (e.target) {
-                    targ=e.target;
-                } else if (e.srcElement) {
-                    targ=e.srcElement;
-                }
-                var tname;
-                tname = targ.tagName;
 
-                var t = document.createElement("textarea");
-                document.body.appendChild(t);
-                t.value = targ.getAttribute("id");
-                t.value = replaceAll(t.value, "__", "#");   // id인 경우
-                t.value = replaceAll(t.value, "_*_", ".");  // class인 경우
-                t.value = replaceAll(t.value, "**", " ");   // parent child 관게인 경우
-                t.select();
-                document.execCommand('copy');
-                document.body.removeChild(t);
-                alert("this target tagName :" + tname + "\nId is " + targ.getAttribute("id"));
-                });
-                
-                //** Add attrubute **/
-                var conbineAtt = "";
-                var colorOfAtt ="";
-                var check = 0;
-                $('li').hover( function() {
-                    if(check == 0){
-                        $( this ).css( 'color', 'red' );
-                        if(conbineAtt){
-                            conbineAtt = "";
-                        }
-                        //id의 value를 id와 class로 나누고, content page에서 해당 id값을 가진 곳을 가르켜보자
-                        var classify = this.getAttribute("id").split("**");
-                        var idClassify = "__";
-                        var classClassify = "_*_";
-                        console.log(this);
-                        for(var i =0; i<classify.length-1;i++){
-                            if(classify[i].indexOf(idClassify)>-1){
-                                var temp_id = classify[i].split(idClassify);
-                                conbineAtt += temp_id[0] + "#"+temp_id[1] + " ";
-                            }else{
-                                if(classify[i].indexOf(classClassify)>-1){
-                                    var temp_id = classify[i].split(classClassify);
-                                    conbineAtt += temp_id[0] + "."+temp_id[1] + " ";
-                                }else{
-                                    conbineAtt += classify[i] + " ";
-                                }
-                            }
-                        }
-                        if(classify[i].indexOf(idClassify)>-1){
+            //** Add attrubute **/
+            var conbineAtt = "";
+            var colorOfAtt = "";
+            var check = 0;
+            $('li').hover(function () {
+                if (check == 0) {
+                    $(this).css('color', 'red');
+                    if (conbineAtt) {
+                        conbineAtt = "";
+                    }
+                    //id의 value를 id와 class로 나누고, content page에서 해당 id값을 가진 곳을 가르켜보자
+                    var classify = this.getAttribute("id").split("**");
+                    var idClassify = "__";
+                    var classClassify = "_*_";
+                    console.log(this);
+                    for (var i = 0; i < classify.length - 1; i++) {
+                        if (classify[i].indexOf(idClassify) > -1) {
                             var temp_id = classify[i].split(idClassify);
-                            conbineAtt += temp_id[0] + "#"+temp_id[1];
-                        }else{
-                            if(classify[i].indexOf(classClassify)>-1){
+                            conbineAtt += temp_id[0] + "#" + temp_id[1] + " ";
+                        } else {
+                            if (classify[i].indexOf(classClassify) > -1) {
                                 var temp_id = classify[i].split(classClassify);
-                                conbineAtt += temp_id[0] + "."+temp_id[1];
-                            }else{
-                                conbineAtt += classify[i];
+                                conbineAtt += temp_id[0] + "." + temp_id[1] + " ";
+                            } else {
+                                conbineAtt += classify[i] + " ";
                             }
                         }
-                        colorOfAtt = $(this).css("background-color")
-                        console.log("conbinAtt : "+conbineAtt+"colorOfAtt" + colorOfAtt);
-                        chrome.tabs.executeScript(null,{
-                            code: 'var conbineAtt = "' + conbineAtt+'";'
-                          },function(){
-                            chrome.tabs.executeScript(null,{
-                                file : 'jquery-3.1.0.min.js'
-                            },function(){
-                                chrome.tabs.executeScript(null,{
-                                    file : 'contentEvent.js'
-                                });
-                            });
-                          });   
                     }
-                    check = check +1;
-                  }, function () {
-                    $( this ).css( 'color', 'black' );
-                    console.log("conbinAtt2 : "+conbineAtt);
-                    if(conbineAtt){
-                        console.log("conbinAtt2 : "+conbineAtt);
-                        chrome.tabs.executeScript(null,{
-                            code: 'var conbineAtt = "' + conbineAtt+'";' + 'var colorOfAtt = "' + colorOfAtt +'";'
-                          },function(){
-                            chrome.tabs.executeScript(null,{
-                                file : 'jquery-3.1.0.min.js'
-                            },function(){
-                                chrome.tabs.executeScript(null,{
-                                    file : 'contentEvent2.js'
-                                });
-                            });
-                          });
+                    if (classify[i].indexOf(idClassify) > -1) {
+                        var temp_id = classify[i].split(idClassify);
+                        conbineAtt += temp_id[0] + "#" + temp_id[1];
+                    } else {
+                        if (classify[i].indexOf(classClassify) > -1) {
+                            var temp_id = classify[i].split(classClassify);
+                            conbineAtt += temp_id[0] + "." + temp_id[1];
+                        } else {
+                            conbineAtt += classify[i];
+                        }
                     }
-                    conbineAtt = "";
-                    colorOfAtt = "";
-                    check = 0;
-                  });
+                    colorOfAtt = $(this).css("background-color")
+                    console.log("conbinAtt : " + conbineAtt + "colorOfAtt" + colorOfAtt);
+                    chrome.tabs.executeScript(null, {
+                        code: 'var conbineAtt = "' + conbineAtt + '";'
+                    }, function () {
+                        chrome.tabs.executeScript(null, {
+                            file: 'jquery-3.1.0.min.js'
+                        }, function () {
+                            chrome.tabs.executeScript(null, {
+                                file: 'contentEvent.js'
+                            });
+                        });
+                    });
+                }
+                check = check + 1;
+            }, function () {
+                $(this).css('color', 'black');
+                console.log("conbinAtt2 : " + conbineAtt);
+                if (conbineAtt) {
+                    console.log("conbinAtt2 : " + conbineAtt);
+                    chrome.tabs.executeScript(null, {
+                        code: 'var conbineAtt = "' + conbineAtt + '";' + 'var colorOfAtt = "' + colorOfAtt + '";'
+                    }, function () {
+                        chrome.tabs.executeScript(null, {
+                            file: 'jquery-3.1.0.min.js'
+                        }, function () {
+                            chrome.tabs.executeScript(null, {
+                                file: 'contentEvent2.js'
+                            });
+                        });
+                    });
+                }
+                conbineAtt = "";
+                colorOfAtt = "";
+                check = 0;
             });
           });
+    });
+
+
+    $(document).ready(function(){
+        /*** Add attribute ***/
+        $("body").click(function(){
+            var e = window.event;
+            console.log(e);
+            if (e.target) {
+                targ=e.target;
+            } else if (e.srcElement) {
+                targ=e.srcElement;
+            }
+
+            var tname;
+            tname = targ.tagName;
+
+            if (tname.toUpperCase() !== "LI") {
+                return;
+            }
+
+            var t = document.createElement("textarea");
+            document.body.appendChild(t);
+            t.value = targ.getAttribute("id");
+            t.value = replaceAll(t.value, "__", "#");   // id인 경우
+            t.value = replaceAll(t.value, "_*_", ".");  // class인 경우
+            t.value = replaceAll(t.value, "**", " ");   // parent child 관게인 경우
+            t.select();
+            document.execCommand('copy');
+            document.body.removeChild(t);
+            alert("this target tagName :" + tname + "\nId is " + targ.getAttribute("id"));
+        });
     });
 });
