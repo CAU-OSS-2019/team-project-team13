@@ -78,6 +78,8 @@ $(function(){
                 }
             }
 
+            alert("DOM Load Finish!");
+
             //** Add attrubute **/
             var conbineAtt = "";
             var colorOfAtt = "";
