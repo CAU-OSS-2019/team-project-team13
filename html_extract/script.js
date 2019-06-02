@@ -55,21 +55,23 @@ $(function(){
     }
       //button을 클릭하면, content page의 html을 글거온다.
     $('#test').click(function(){
-        if (!window.originPopup) {
-            window.originPopup = document.body.innerHTML;
-        }
-        else {
-            document.body.innerHTML = window.originPopup;
-        }
-
-        chrome.tabs.executeScript({
+        chrome.tabs.executeScript(null, {
             //body의 html가 callback 함수의 result 파라미터로 들어간다.
             code:' document.body.innerHTML;'
           },function(result){
             //해당 html String을 jquery로 hmtl object형식으로 바꿔준다.
             var domString = result[0];
             var html = $.parseHTML(domString);
+
+            if (window.originPopup === undefined) {
+                window.originPopup = document.getElementById("ol__contentBody").innerHTML;
+            }
+            else {
+                document.getElementById("ol__contentBody").innerHTML = window.originPopup;
+            }
+
             //각 html 태그의 하위노드에 뭐가 있는지 확인하고, 해당 tree구조를 보여준다.
+            count = 0;
             for(var i = 0;i<html.length;i++){
                 if(html[i].children){
                     childrenSearch(html[i],"ol__contentBody");
