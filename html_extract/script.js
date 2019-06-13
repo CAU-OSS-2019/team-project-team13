@@ -84,9 +84,9 @@ $(function(){
                 var t = document.createElement("textarea");
                 document.body.appendChild(t);
                 t.value = targ.getAttribute("id");
-                t.value = replaceAll(t.value, "__", "#");   // id인 경우
-                t.value = replaceAll(t.value, "_*_", ".");  // class인 경우
-                t.value = replaceAll(t.value, "**", " ");   // parent child 관게인 경우
+                t.value = replaceAll(t.value, "__", ".");
+                t.value = replaceAll(t.value, "_*_", "#");
+                t.value = replaceAll(t.value, "**", " ");
                 t.select();
                 document.execCommand('copy');
                 document.body.removeChild(t);
