@@ -57,67 +57,74 @@ $(function(){
                 document.getElementsByClassName("ol__contentBody").innerHTML = window.originPopup;
             }
 
-            //각 html 태그의 하위노드에 뭐가 있는지 확인하고, 해당 tree구조를 보여준다.
-            count = 0;
-            for(var i = 0;i<html.length;i++){
-                if(html[i].children){
-                    childrenSearch(html[i],"ol__contentBody");
-                }
-            }
+            // 로딩 바를 표시한다.
+            $('.loader').show(function() {
 
-            alert("DOM Load Finish!");
+              //각 html 태그의 하위노드에 뭐가 있는지 확인하고, 해당 tree구조를 보여준다.
+              count = 0;
+              for(var i = 0;i<html.length;i++){
+                  if(html[i].children){
+                      childrenSearch(html[i],"ol__contentBody");
+                  }
+              }
 
-            //** Add attrubute **/
-            var conbineAtt = "";
-            var colorOfAtt = "";
-            var check = 0;
-            $('span').hover(function () {
-                if (check == 0) {
-                    $(this).css('color', 'red');
-                    if (conbineAtt) {
-                        conbineAtt = "";
+              // 로딩 바를 숨긴다.
+              $('.loader').hide(function() {
+                alert("DOM Load Finish!");
+
+                //** Add attrubute **/
+                var conbineAtt = "";
+                var colorOfAtt = "";
+                var check = 0;
+                $('span').hover(function () {
+                    if (check == 0) {
+                        $(this).css('color', 'red');
+                        if (conbineAtt) {
+                            conbineAtt = "";
+                        }
+                        var targetTagId = this.getAttribute("class");
+                        targetTagId = replaceAll(targetTagId, "____", " ");   // parent child 관게인 경우
+                        targetTagId = replaceAll(targetTagId, "___", ".");  // class인 경우
+                        targetTagId = replaceAll(targetTagId, "__", "#");   // id인 경우
+                        conbineAtt = targetTagId;
+                        colorOfAtt = $(this).css("background-color")
+                        console.log("conbinAtt : " + conbineAtt + "colorOfAtt" + colorOfAtt);
+                        chrome.tabs.executeScript(null, {
+                            code: 'var conbineAtt = "' + conbineAtt + '";'
+                        }, function () {
+                            chrome.tabs.executeScript(null, {
+                                file: 'jquery-3.1.0.min.js'
+                            }, function () {
+                                chrome.tabs.executeScript(null, {
+                                    file: 'contentEvent.js'
+                                });
+                            });
+                        });
                     }
-                    var targetTagId = this.getAttribute("class");
-                    targetTagId = replaceAll(targetTagId, "____", " ");   // parent child 관게인 경우
-                    targetTagId = replaceAll(targetTagId, "___", ".");  // class인 경우
-                    targetTagId = replaceAll(targetTagId, "__", "#");   // id인 경우
-                    conbineAtt = targetTagId;
-                    colorOfAtt = $(this).css("background-color")
-                    console.log("conbinAtt : " + conbineAtt + "colorOfAtt" + colorOfAtt);
-                    chrome.tabs.executeScript(null, {
-                        code: 'var conbineAtt = "' + conbineAtt + '";'
-                    }, function () {
-                        chrome.tabs.executeScript(null, {
-                            file: 'jquery-3.1.0.min.js'
-                        }, function () {
-                            chrome.tabs.executeScript(null, {
-                                file: 'contentEvent.js'
-                            });
-                        });
-                    });
-                }
-                check = check + 1;
-            }, function () {
-                $(this).css('color', 'black');
-                console.log("conbinAtt2 : " + conbineAtt);
-                temp = conbineAtt;
-                if (temp) {
+                    check = check + 1;
+                }, function () {
+                    $(this).css('color', 'black');
                     console.log("conbinAtt2 : " + conbineAtt);
-                    chrome.tabs.executeScript(null, {
-                        code: 'var conbineAtt = "' + conbineAtt + '";' + 'var colorOfAtt = "' + colorOfAtt + '";'
-                    }, function () {
+                    temp = conbineAtt;
+                    if (temp) {
+                        console.log("conbinAtt2 : " + conbineAtt);
                         chrome.tabs.executeScript(null, {
-                            file: 'jquery-3.1.0.min.js'
+                            code: 'var conbineAtt = "' + conbineAtt + '";' + 'var colorOfAtt = "' + colorOfAtt + '";'
                         }, function () {
                             chrome.tabs.executeScript(null, {
-                                file: 'contentEvent2.js'
+                                file: 'jquery-3.1.0.min.js'
+                            }, function () {
+                                chrome.tabs.executeScript(null, {
+                                    file: 'contentEvent2.js'
+                                });
                             });
                         });
-                    });
-                }
-                conbineAtt = "";
-                colorOfAtt = "";
-                check = 0;
+                    }
+                    conbineAtt = "";
+                    colorOfAtt = "";
+                    check = 0;
+                });
+              });
             });
           });
     });
