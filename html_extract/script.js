@@ -100,7 +100,8 @@ $(function(){
             }, function () {
                 $(this).css('color', 'black');
                 console.log("conbinAtt2 : " + conbineAtt);
-                if (conbineAtt) {
+                temp = conbineAtt;
+                if (temp) {
                     console.log("conbinAtt2 : " + conbineAtt);
                     chrome.tabs.executeScript(null, {
                         code: 'var conbineAtt = "' + conbineAtt + '";' + 'var colorOfAtt = "' + colorOfAtt + '";'
