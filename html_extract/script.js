@@ -1,7 +1,7 @@
 $(function(){
     function childrenSearch(parent,parentId){
-
         if(parent.tagName !="CODE" && parent.tagName !="P" &&parent.tagName !="A" && parent.tagName !="SPAN" && parent.innerText != "" ){
+
             var beforeParentId = parentId;
             var parentILtag = '<li><span';
             var chilrenOLtag = '<ol';
@@ -82,7 +82,6 @@ $(function(){
                     targetTagId = replaceAll(targetTagId, "___", ".");  // class인 경우
                     targetTagId = replaceAll(targetTagId, "__", "#");   // id인 경우
                     conbineAtt = targetTagId;
-
                     colorOfAtt = $(this).css("background-color")
                     console.log("conbinAtt : " + conbineAtt + "colorOfAtt" + colorOfAtt);
                     chrome.tabs.executeScript(null, {
